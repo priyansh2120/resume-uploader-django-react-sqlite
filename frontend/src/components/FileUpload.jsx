@@ -408,7 +408,7 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import { useNavigate } from 'react-router-dom';
 
-const FileUpload = () => {
+const FileUpload = ({onClose}) => {
   const [resumeFile, setResumeFile] = useState(null);
   const [pictureFile, setPictureFile] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -424,6 +424,7 @@ const FileUpload = () => {
   const [selectedDomainKnowledge, setSelectedDomainKnowledge] = useState([]);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [focusedField, setFocusedField] = useState(null);
+  const [submitError, setSubmitError] = useState(false); // State for error popup
   const [submitSuccess, setSubmitSuccess] = useState(false); // State for success popup
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -613,6 +614,8 @@ const FileUpload = () => {
       console.log('File successfully uploaded', response.data);
       setSubmitSuccess(true);
     } catch (error) {
+      setSubmitError(true);
+      onClose();
       console.error('Error uploading file', error);
     }
   };
@@ -622,6 +625,7 @@ const FileUpload = () => {
       const timer = setTimeout(() => {
         setSubmitSuccess(false);
         navigate('/resumes');
+        onClose();
       }, 3000); // Redirect after 3 seconds
       return () => clearTimeout(timer);
     }
@@ -637,6 +641,8 @@ const FileUpload = () => {
             type="file"
             name="resumeFile"
             onChange={handleFileChange}
+            accept='.doc, .docx'
+            
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 
           />
@@ -647,6 +653,8 @@ const FileUpload = () => {
             type="file"
             name="pictureFile"
             onChange={handleFileChange}
+            accept='.jpg'
+            
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
@@ -732,6 +740,7 @@ const FileUpload = () => {
               type="date"
               name="dateOfBirth"
               onChange={handleInputChange}
+              onKeyDown={(e) => e.preventDefault()}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
             />
           </div>
@@ -807,6 +816,13 @@ const FileUpload = () => {
         <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-md shadow-md">
             <p className="text-green-500 text-lg font-semibold">Form submitted successfully!</p>
+          </div>
+        </div>
+      )}
+      {submitError && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md">
+            <p className="text-red-500 text-lg font-semibold">Error submitting form. Please try again later.</p>
           </div>
         </div>
       )}

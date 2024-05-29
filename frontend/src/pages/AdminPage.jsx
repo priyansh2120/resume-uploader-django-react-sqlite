@@ -7,11 +7,27 @@ const AdminPage = () => {
   const [resumes, setResumes] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  // const [isAdmin, setIsAdmin] = useState(false);
+  
+  
+  const fetchAdminStatus = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const response = await axios.get('http://127.0.0.1:8000/user/check-admin/', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      // setIsAdmin(response.data.isAdmin);
+      if (!response.data.isAdmin) {
+        navigate('/resumes');
+      }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching admin status:', error);
 
+    }
+  };
   const fetchData = async () => {
     try {
       const accessToken = Cookies.get('accessToken');
@@ -94,9 +110,13 @@ const AdminPage = () => {
       console.error('Error logging out:', error);
     }
   };
-
+  useEffect(() => {
+    fetchData();
+    fetchAdminStatus();
+  }, []);
 
   return (
+    
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">Admin Page</h1>
       <div className="flex justify-between items-center mb-4">

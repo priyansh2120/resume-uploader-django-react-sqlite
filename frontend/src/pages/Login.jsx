@@ -7,7 +7,6 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('accessToken'));
-  const [userId, setUserId] = useState(Cookies.get('userId'));
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -21,8 +20,7 @@ const Login = () => {
       if (response.status === 200) {
         Cookies.set('accessToken', response.data.access, { expires: 1 }); // Set access token cookie
         Cookies.set('isAdmin', response.data.is_admin, { expires: 1 }); // Set isAdmin flag cookie
-        Cookies.set('userId', username); // Set userId cookie
-        setUserId(username); // Set userId state
+        Cookies.set('userId', username); 
         setLoggedIn(true);
       }
     } catch (error) {

@@ -1,9 +1,11 @@
-
 // import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 // import { v4 as uuidv4 } from 'uuid';
 // import KnowledgeInput from './KnowledgeInput';
 // import Cookies from 'js-cookie';
+// import 'react-quill/dist/quill.snow.css';
+// import ReactQuill from 'react-quill';
+// import { useNavigate } from 'react-router-dom';
 
 // const FileUpload = () => {
 //   const [resumeFile, setResumeFile] = useState(null);
@@ -21,6 +23,8 @@
 //   const [selectedDomainKnowledge, setSelectedDomainKnowledge] = useState([]);
 //   const [selectedKeywords, setSelectedKeywords] = useState([]);
 //   const [focusedField, setFocusedField] = useState(null);
+//   const [submitSuccess, setSubmitSuccess] = useState(false); // State for success popup
+//   const navigate = useNavigate();
 //   const [formData, setFormData] = useState({
 //     userId: '',
 //     name: '',
@@ -98,9 +102,21 @@
 //   const handleFileChange = (event) => {
 //     const { name, files } = event.target;
 //     if (name === 'resumeFile') {
-//       setResumeFile(files[0]);
+//       const file = files[0];
+//       if (file && file.size <= 1048576 && (file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+//         setResumeFile(file);
+//       } else {
+//         setResumeFile(null);
+//         alert('Resume must be a .doc or .docx file and less than 1 MB');
+//       }
 //     } else if (name === 'pictureFile') {
-//       setPictureFile(files[0]);
+//       const file = files[0];
+//       if (file && file.size <= 102400 && file.type === 'image/jpeg') {
+//         setPictureFile(file);
+//       } else {
+//         setPictureFile(null);
+//         alert('Picture must be a .jpg file and less than 100 KB');
+//       }
 //     }
 //   };
 
@@ -146,6 +162,7 @@
 //   const handleBlur = () => {
 //     setFocusedField(null);
 //   };
+  
 
 //   const handleSubmit = async (event) => {
 //     event.preventDefault();
@@ -177,26 +194,38 @@
 //         },
 //       });
 //       console.log('File successfully uploaded', response.data);
+//       setSubmitSuccess(true);
 //     } catch (error) {
 //       console.error('Error uploading file', error);
 //     }
 //   };
+
+//   useEffect(() => {
+//     if (submitSuccess) {
+//       const timer = setTimeout(() => {
+//         setSubmitSuccess(false);
+//         navigate('/resumes');
+//       }, 3000); // Redirect after 3 seconds
+//       return () => clearTimeout(timer);
+//     }
+//   }, [submitSuccess, navigate]);
 
 //   return (
 //     <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-md">
 //       <h2 className="text-2xl font-bold mb-4">Upload Your Resume and Picture</h2>
 //       <form onSubmit={handleSubmit} className="space-y-4">
 //         <div>
-//           <label className="block text-sm font-medium text-gray-700">Resume File</label>
+//           <label className="block text-sm font-medium text-gray-700">Resume File (Max 1 MB, .doc, .docx)</label>
 //           <input
 //             type="file"
 //             name="resumeFile"
 //             onChange={handleFileChange}
 //             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+
 //           />
 //         </div>
 //         <div>
-//           <label className="block text-sm font-medium text-gray-700">Picture File</label>
+//           <label className="block text-sm font-medium text-gray-700">Picture File (Max 100 KB, .jpg)</label>
 //           <input
 //             type="file"
 //             name="pictureFile"
@@ -205,105 +234,112 @@
 //           />
 //         </div>
 //         <div>
-//           <label className="block text-sm font-medium text-gray-700">Country</label>
-//           <select
-//             value={selectedCountry}
-//             onChange={(e) => {
-//               setSelectedCountry(e.target.value);
-//               fetchStates(e.target.value);
-//             }}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           >
-//             <option value="">Select a country</option>
-//             {countries.map((country) => (
-//               <option key={country.id} value={country.name}>
-//                 {country.name}
-//               </option>
-//             ))}
-//           </select>
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">State</label>
-//           <select
-//             value={selectedState}
-//             onChange={(e) => {
-//               setSelectedState(e.target.value);
-//               fetchCities(e.target.value);
-//             }}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           >
-//             <option value="">Select a state</option>
-//             {states.map((state) => (
-//               <option key={state.id} value={state.name}>
-//                 {state.name}
-//               </option>
-//             ))}
-//           </select>
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">City</label>
-//           <select
-//             value={selectedCity}
-//             onChange={(e) => setSelectedCity(e.target.value)}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           >
-//             <option value="">Select a city</option>
-//             {cities.map((city) => (
-//               <option key={city.id} value={city.name}>
-//                 {city.name}
-//               </option>
-//             ))}
-//           </select>
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">User ID</label>
-//           <input
-//             type="text"
-//             name="userId"
-//             placeholder="User ID"
-//             onChange={handleInputChange}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           />
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">Name</label>
-//           <input
-//             type="text"
-//             name="name"
-//             placeholder="Name"
-//             onChange={handleInputChange}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           />
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-//           <input
-//             type="date"
-//             name="dateOfBirth"
-//             onChange={handleInputChange}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           />
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">Total Experience</label>
-//           <input
-//             type="number"
-//             name="totalExperience"
-//             placeholder="Total Experience"
-//             onChange={handleInputChange}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           />
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">Expected Salary</label>
-//           <input
-//             type="number"
-//             name="expectedSalary"
-//             placeholder="Expected Salary"
-//             onChange={handleInputChange}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-//           />
-//         </div>
+//             <label className="block text-sm font-medium text-gray-700">Country</label>
+//             <select
+//               value={selectedCountry}
+//               onChange={(e) => {
+//                 setSelectedCountry(e.target.value);
+//                 fetchStates(e.target.value);
+//               }}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             >
+//               <option value="">Select a country</option>
+//               {countries.map((country) => (
+//                 <option key={country.id} value={country.name}>
+//                   {country.name}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+                
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">State</label>
+//             <select
+//               value={selectedState}
+//               onChange={(e) => {
+//                 setSelectedState(e.target.value);
+//                 fetchCities(e.target.value);
+//               }}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             >
+//               <option value="">Select a state</option>
+//               {states.map((state) => (
+//                 <option key={state.id} value={state.name}>
+//                   {state.name}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">City</label>
+//             <select
+//               value={selectedCity}
+//               onChange={(e) => setSelectedCity(e.target.value)}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             >
+//               <option value="">Select a city</option>
+//               {cities.map((city) => (
+//                 <option key={city.id} value={city.name}>
+//                   {city.name}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">User ID</label>
+//             <input
+//               type="text"
+//               name="userId"
+//               placeholder="User ID"
+//               onChange={handleInputChange}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             />
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">Name</label>
+//             <input
+//               type="text"
+//               name="name"
+//               placeholder="Name"
+//               onChange={handleInputChange}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             />
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+//             <input
+//               type="date"
+//               name="dateOfBirth"
+//               onChange={handleInputChange}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             />
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">Total Experience</label>
+//             <input
+//               type="number"
+//               name="totalExperience"
+//               placeholder="Total Experience"
+//               onChange={handleInputChange}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             />
+//           </div>
+
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">Expected Salary</label>
+//             <input
+//               type="number"
+//               name="expectedSalary"
+//               placeholder="Expected Salary"
+//               onChange={handleInputChange}
+//               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+//             />
+//           </div>
 //         <div>
 //           <KnowledgeInput
 //             label="Tech Knowledge"
@@ -336,11 +372,11 @@
 //         </div>
 //         <div>
 //           <label className="block text-sm font-medium text-gray-700">Brief Description</label>
-//           <textarea
-//             name="briefDescription"
-//             placeholder="Brief Description"
-//             onChange={handleInputChange}
-//             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+//           <ReactQuill
+//             theme="snow"
+//             value={formData.briefDescription}
+//             onChange={(value) => setFormData({ ...formData, briefDescription: value })}
+//             className="mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 //           />
 //         </div>
 //         <button
@@ -350,12 +386,18 @@
 //           Upload Files
 //         </button>
 //       </form>
+//       {submitSuccess && (
+//         <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+//           <div className="bg-white p-6 rounded-md shadow-md">
+//             <p className="text-green-500 text-lg font-semibold">Form submitted successfully!</p>
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // };
 
 // export default FileUpload;
-
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -465,6 +507,7 @@ const FileUpload = () => {
       if (file && file.size <= 1048576 && (file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
         setResumeFile(file);
       } else {
+        setResumeFile(null);
         alert('Resume must be a .doc or .docx file and less than 1 MB');
       }
     } else if (name === 'pictureFile') {
@@ -472,6 +515,7 @@ const FileUpload = () => {
       if (file && file.size <= 102400 && file.type === 'image/jpeg') {
         setPictureFile(file);
       } else {
+        setPictureFile(null);
         alert('Picture must be a .jpg file and less than 100 KB');
       }
     }
@@ -479,6 +523,23 @@ const FileUpload = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+    
+    // Date validation logic
+    if (name === 'dateOfBirth') {
+      const selectedDate = new Date(value);
+      const earliestDate = new Date('1900-01-01');
+      const today = new Date();
+
+      if (selectedDate < earliestDate || selectedDate > today) {
+        alert('Date of birth must be between 1900 and today.');
+        setFormData({
+          ...formData,
+          dateOfBirth: '',
+        });
+        return;
+      }
+    }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -520,7 +581,6 @@ const FileUpload = () => {
     setFocusedField(null);
   };
   
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData();
@@ -578,6 +638,7 @@ const FileUpload = () => {
             name="resumeFile"
             onChange={handleFileChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+
           />
         </div>
         <div>

@@ -7,7 +7,6 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     userId: '',
     password: '',
-    email: '',
     isAdmin: false,
   });
   const [signupSuccess, setSignupSuccess] = useState(false);
@@ -48,7 +47,6 @@ const Signup = () => {
       setFormData({
         userId: '',
         password: '',
-        email: '',
         isAdmin: false,
       });
     } catch (error) {
@@ -93,19 +91,6 @@ const Signup = () => {
               name="password"
               id="password"
               value={formData.password}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100 px-3 py-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              value={formData.email}
               onChange={handleInputChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100 px-3 py-2"
             />

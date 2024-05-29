@@ -33,7 +33,7 @@ const ViewResumeScreen = () => {
     };
 
     fetchResume();
-  }, [resumeId]);
+  }, [resumeId, accessToken]);
 
   const handleDownload = (fileUrl, fileName) => {
     const baseUrl = 'http://127.0.0.1:8000';
@@ -109,7 +109,7 @@ const ViewResumeScreen = () => {
         <div>{resume.keywords.join(', ')}</div>
         
         <div className="font-semibold">Brief Description:</div>
-        <div>{resume.briefDescription}</div>
+        <div dangerouslySetInnerHTML={{ __html: resume.briefDescription }} />
       </div>
       <div className="mt-6 flex justify-between">
         <button

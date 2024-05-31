@@ -23,4 +23,5 @@ from resumes import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('resumes.urls')), 
+    
 ]

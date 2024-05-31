@@ -102,15 +102,21 @@ const ListingScreen = () => {
   const handleLogout = async () => {
     try {
       const accessToken = Cookies.get('accessToken');
-      await axios.post('http://127.0.0.1:8000/user/logout/', null, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-      Cookies.remove('accessToken');
-      Cookies.remove('userId');
-      Cookies.remove('isAdmin');
-      navigate('/login');
+      if(!accessToken){
+        navigate('/login');
+      }
+      else{
+        await axios.post('http://127.0.0.1:8000/user/logout/', null, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        Cookies.remove('accessToken');
+        Cookies.remove('userId');
+        Cookies.remove('isAdmin');
+        navigate('/login');
+      }
+      
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -119,7 +125,7 @@ const ListingScreen = () => {
 
 
   return (
-    <div className='p-8 m-4'>
+    <div className='p-8 m-4 bg-gradient-to-r from-blue-500 to-purple-500 h-[100vh]'>
       {/* <h2>Listing Screen</h2>
       <div className="flex items-center mb-4">
         <input
@@ -155,7 +161,7 @@ const ListingScreen = () => {
         </Link>
       )} */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-bold center">Listing Screen</h2>
+        <h2 className="text-3xl font-bold pl-[32rem] text-white">Listing Screen</h2>
         {isAdmin && (
           <Link to="/admin" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none">
             Admin Panel
@@ -198,7 +204,7 @@ const ListingScreen = () => {
 
 
 
-      <table className="border-collapse border border-gray-400 w-full">
+      <table className="border-collapse border border-gray-400 table-fixed w-[100%]">
         <thead>
           <tr className="bg-gray-200">
             <th className="border border-gray-400 px-4 py-2">Name</th>

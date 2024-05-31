@@ -67,7 +67,7 @@ const ViewResumeScreen = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className="max-w-4xl mx-auto p-6 shadow-md rounded-lg  font-roboto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Resume Details</h2>
         <button

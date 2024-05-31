@@ -19,6 +19,7 @@ const AdminPage = () => {
         }
       });
       // setIsAdmin(response.data.isAdmin);
+      
       if (!response.data.isAdmin) {
         navigate('/resumes');
       }
@@ -97,27 +98,40 @@ const AdminPage = () => {
   const handleLogout = async () => {
     try {
       const accessToken = Cookies.get('accessToken');
-      await axios.post('http://127.0.0.1:8000/user/logout/', null, {
+      if(!accessToken){
+        navigate('/login');
+      }
+      else{
+        await axios.post('http://127.0.0.1:8000/user/logout/', null, {
         headers: {
           Authorization: `Bearer ${accessToken}`
-        }
-      });
-      Cookies.remove('accessToken');
-      Cookies.remove('userId');
-      Cookies.remove('isAdmin');
-      navigate('/login');
+          }
+        });
+        Cookies.remove('accessToken');
+        Cookies.remove('userId');
+        Cookies.remove('isAdmin');
+        navigate('/login');
+      }
+      
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
   useEffect(() => {
-    fetchData();
-    fetchAdminStatus();
+    const accessToken = Cookies.get('accessToken');
+    if (!accessToken) {
+      navigate('/login');
+    }
+    else{
+      fetchData();
+      fetchAdminStatus();
+    }
+    
   }, []);
 
   return (
     
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto ">
       <h1 className="text-2xl font-bold mb-4 text-center">Admin Page</h1>
       <div className="flex justify-between items-center mb-4">
         <div className="w-1/2 text-left">
